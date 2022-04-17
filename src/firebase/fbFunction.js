@@ -1,8 +1,8 @@
 // Importamos app para inicializar firebase
 import { app, db } from './fbKeys.js'; 
-import {  addDoc, collection, query, getDocs, orderBy, onSnapshot, updateDoc, doc } from './firebaseImport.js'
+import {  addDoc, collection, query, getDocs, orderBy, onSnapshot, updateDoc, doc  } from './firebaseImport.js'
 import { createUser, provider } from '../view-controler/controllers.js';
-import { signIn } from '../view-controler/controllers.js';
+import { signIn , signOutFunction } from '../view-controler/controllers.js';
 import { changeView } from '../view-controler/route.js';
 import { signInWithGoogle } from '../view-controler/controllers.js';
 import { GoogleAuthProvider } from './firebaseImport.js';
@@ -72,6 +72,10 @@ export const signInUser = (auth, email, password) => {
       console.log(errorMessage, "No esta entrando a la funcion signIn");
     });
     }
+
+    
+
+
     // const auth = getAuth();
     export const loginGoogle = (auth, provider) => {
       signInWithGoogle(auth,provider)
@@ -107,8 +111,16 @@ export const signInUser = (auth, email, password) => {
 }); */
 return querySnapshot;
   }
-  
 
 export const editPost = ( id, postUpdate) => {
   return updateDoc(doc(db,'posts', id),{post:postUpdate})
+}
+
+export const signOut = (auth) => {
+  signOutFunction(auth)
+  .then(() => {
+    // Sign-out successful.
+    changeView('#/register');
+    console.log("Si esta cerrando sesion")
+  })
 }

@@ -1,4 +1,4 @@
-import { savePost, showsPost, editPost } from '../firebase/fbFunction.js';
+import { savePost, showsPost, editPost, signOut } from '../firebase/fbFunction.js';
 import { getAuth, onSnapshot, serverTimestamp } from '../Firebase/firebaseImport.js';
 
 
@@ -27,6 +27,7 @@ export const showsPaintPost = () => {
       })
       )
    }
+
 const divEcotraveler = document.createElement('div');
 divEcotraveler.setAttribute("class", "gridDivEcotraveler")
 const divContainerPost = document.createElement('div');
@@ -53,6 +54,10 @@ export default () => {
   const btnPost = divEcotraveler.querySelector('#publicBtn');
   // creamos un evento al boton publicar
   btnPost.addEventListener('click', () => clickPost(divEcotraveler));
+
+  const btnSignOut = divEcotraveler.querySelector('#signOutIcon');
+  btnSignOut.addEventListener('click', () => signOut(auth));
+
   return divEcotraveler;
 };
 
@@ -94,6 +99,7 @@ btnEdit.addEventListener('click', () => {
    modal.classList.add('show');
 })
 edit.addEventListener('click', () => {
+   console.log(idPost, userName, 'Esto es un experimento');
    modal.classList.remove('show');
    const postEdited = divPost.querySelector('#editPost').value;
    editFunction(idPost, postEdited);
