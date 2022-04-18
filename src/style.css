@@ -255,6 +255,13 @@ margin-top: 18%;
     border-radius: 10px;
     font-family: 'Lato', sans-serif;
 }
+.paint{
+    border:2px solid red;
+}
+.paintBlue{
+    border:2px solid blue;
+
+}
 @media (min-width: 600px) {
 .gridHeader{
     display: grid;

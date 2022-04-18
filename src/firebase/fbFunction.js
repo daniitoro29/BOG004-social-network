@@ -1,6 +1,6 @@
 // Importamos app para inicializar firebase
 import { app, db } from './fbKeys.js'; 
-import {  addDoc, collection, query, getDocs, orderBy, onSnapshot, updateDoc, doc  } from './firebaseImport.js'
+import {  addDoc, collection, query, getDocs, orderBy, onSnapshot, updateDoc, doc, arrayUnion, arrayRemove   } from './firebaseImport.js'
 import { createUser, provider } from '../view-controler/controllers.js';
 import { signIn , signOutFunction } from '../view-controler/controllers.js';
 import { changeView } from '../view-controler/route.js';
@@ -101,15 +101,27 @@ export const signInUser = (auth, email, password) => {
       });
     }
 
-    export const savePost = (post, userName, date) => addDoc(collection(db, 'posts'), { post, userName, date});
+    export const savePost = (post, userName, date) => addDoc(collection(db, 'posts'), { post, userName, date, like: []});
 
   export const showsPost = async () => {
-    const querySnapshot = await getDocs(collection(db, 'posts'),orderBy('date','desc'));
+    const querySnapshot = await getDocs(collection(db, 'posts'));
+    
 /*     querySnapshot.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
       console.log(doc.id, " => ", doc.data().post);s
 }); */
 return querySnapshot;
+  }
+
+export const prueba = () => {
+    const q = query(collection(db, "posts"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const cities = [];
+      querySnapshot.forEach((doc) => {
+          cities.push(doc.data());
+      });
+      console.log("Current cities in CA: ", cities.join(", "));
+    });
   }
 
 export const editPost = ( id, postUpdate) => {
@@ -123,4 +135,12 @@ export const signOut = (auth) => {
     changeView('#/register');
     console.log("Si esta cerrando sesion")
   })
+}
+
+export const likePost = ( idPost, idUser, isLike) => {
+  if (!isLike ) {
+    return updateDoc(doc(db,'posts', idPost),{like: arrayUnion(idUser)})
+  } else {
+    return updateDoc(doc(db,'posts', idPost),{like: arrayRemove(idUser)})
+  }
 }

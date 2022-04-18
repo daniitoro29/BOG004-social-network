@@ -1,4 +1,4 @@
-import { savePost, showsPost, editPost, signOut } from '../firebase/fbFunction.js';
+import { savePost, showsPost, editPost, signOut, likePost, prueba } from '../firebase/fbFunction.js';
 import { getAuth, onSnapshot, serverTimestamp } from '../Firebase/firebaseImport.js';
 
 
@@ -6,23 +6,27 @@ const auth = getAuth();
 
 const clickPost = (div) => {
    const userName = auth.currentUser;
-   console.log("user name", userName.email);
    const actualDate = serverTimestamp();
    const postValue = div.querySelector('#inputPost').value;
-   //   divEcotraveler.innerHTML = '';
-   savePost(postValue, userName.email, actualDate).then(()=> {
-//   divContainerPost.innerHTML = '';
-showsPaintPost();
-const cleanPost = document.querySelector('#inputPost');
-cleanPost.value= '';
+   savePost(postValue, userName.email, actualDate)
+      .then(()=> {
+         showsPaintPost();
+         const cleanPost = document.querySelector('#inputPost');
+         cleanPost.value= '';
 })
 }
 export const showsPaintPost = () => {
-      console.log('Hola entre')
          showsPost()
       .then((res) => res.forEach((e) => { 
          divContainerPost.appendChild(paintPost(e.id, e.data()));
-         console.log(e.id, "Esto es eeeeeeeeeeeeeeee");
+         const colorLike = divContainerPost.querySelector('#like');
+         if (e.data().like.includes(auth.currentUser.uid)) {
+            colorLike.classList.add('paint');
+            colorLike.classList.remove('paintBlue');
+         } else {
+            colorLike.classList.remove('paint')
+            colorLike.classList.add('paintBlue');
+         }
            divEcotraveler.appendChild(divContainerPost);
       })
       )
@@ -63,8 +67,6 @@ export default () => {
 
 
 export const paintPost = (idPost, post) =>{
-   console.log(auth.currentUser, "Esta es la prueba de si uid");
-   console.log(post, "Hola soy post user name")
    const divPost = document.createElement('div');
    let historyPost =  `
    <div class='containerWallPost'>
@@ -79,7 +81,7 @@ export const paintPost = (idPost, post) =>{
       </div>
      </div>
       <div class='containerIconsPost'>
-        <img src='img/heart (1).png' alt='like' class='icons like' id='likePost' >
+        <img src='img/heart (1).png' alt='like' class='icons like' id='like' >
         <img src='img/pencil (1).png' alt='editPost' class='icons' id='edit'>
         <img src='img/bin.png' alt='deletePost' class='icons' ></img id='delete'>
       </div>
@@ -93,19 +95,31 @@ const btnEdit = divPost.querySelector('#edit');
 const postEd = divPost.querySelector('#textAreaPost');
 const modal = divPost.querySelector('#containerModal');
 const edit = divPost.querySelector('#publicBtnEditPost');
-console.log(btnEdit, 'soy el boton edit')
 btnEdit.addEventListener('click', () => {
    postEd.classList.add('hide');
    modal.classList.add('show');
 })
 edit.addEventListener('click', () => {
-   console.log(idPost, userName, 'Esto es un experimento');
    modal.classList.remove('show');
    const postEdited = divPost.querySelector('#editPost').value;
    editFunction(idPost, postEdited);
    postEd.value = postEdited;
    postEd.classList.remove('hide');
 })
+
+const btnLike = divPost.querySelector('#like');
+btnLike.addEventListener('click', () => {
+     showsPost()
+     .then((res) => res.forEach((e) => {
+        if (e.id === idPost) {
+          if(e.data().like.includes(auth.currentUser.uid)) {
+            like(idPost, auth.currentUser.uid, true)
+          } else {
+            like(idPost, auth.currentUser.uid, false)
+          }
+        }
+   }))
+});
 
     return divPost; 
 }
@@ -115,3 +129,8 @@ window.onload = showsPaintPost;
 const editFunction = (id, post) => {
    editPost( id, post);
 }
+
+const like = (idPost, idUser, isLike ) => {
+ likePost(idPost, idUser, isLike)
+}
+
