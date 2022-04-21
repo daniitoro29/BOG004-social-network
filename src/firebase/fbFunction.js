@@ -89,7 +89,7 @@ export const signInUser = (auth, email, password) => {
 };
 // const auth = getAuth();
 export const loginGoogle = (auth, provider) => {
-  signInWithGoogle(authprovider)
+  signInWithGoogle(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
